@@ -157,7 +157,7 @@ def main():
                     rx_queue = modem.get_mt_message_queue()
                     for i, _ in enumerate(rx_queue):
                         mt_message = rx_queue[i]
-                        mt_message = modem.mt_message_receive(mt_message)
+                        mt_message = modem.mt_message_recv(mt_message)
                         if (mt_message and
                             mt_message.size and
                             mt_message.id and
@@ -169,7 +169,7 @@ def main():
                                     mt_message.payload,
                                     heartbeat_interval
                                 )
-                            modem.mt_message_dequeue(mt_message.id)
+                            modem.mt_message_delete(mt_message.id)
                 
                 elif event == EventNotification.MESSAGE_MO_COMPLETE:
                     tx_queue = modem.get_mo_message_queue()
@@ -179,7 +179,7 @@ def main():
                             mo_message.id):
                             logger.info('MO message %s complete: %s',
                                         mo_message.id, mo_message.state.name)
-                            modem.mo_message_dequeue(mo_message.id)
+                            modem.mo_message_delete(mo_message.id)
                 
                 else:
                     logger.debug('Ignoring %s', event.name)

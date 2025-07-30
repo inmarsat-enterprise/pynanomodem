@@ -1,0 +1,2 @@
+pyatcommand>=0.4
+crcmod~=1.7

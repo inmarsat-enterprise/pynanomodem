@@ -150,7 +150,7 @@ class SatelliteModem(AtClient, ABC):
         """
         raise NotImplementedError('Implement in model-specific subclass')
     
-    def mo_message_dequeue(self, message_id: Union[str, int]) -> bool:
+    def mo_message_delete(self, message_id: Union[str, int]) -> bool:
         """Remove a completed mobile-originated message from the Tx queue.
         
         Args:
@@ -175,7 +175,7 @@ class SatelliteModem(AtClient, ABC):
         raise NotImplementedError('Implement in model-specific subclass')
     
     # @abstractmethod
-    def mt_message_receive(self, message: MtMessage) -> Union[MtMessage, None]:
+    def mt_message_recv(self, message: MtMessage) -> Union[MtMessage, None]:
         """Retrieve the specified message (by name) from the Rx queue.
         
         Args:
@@ -186,7 +186,7 @@ class SatelliteModem(AtClient, ABC):
         """
         raise NotImplementedError('Implement in model-specific subclass')
     
-    def mt_message_dequeue(self, message_id: Union[str, int]) -> bool:
+    def mt_message_delete(self, message_id: Union[str, int]) -> bool:
         """Remove a completed mobile-terminated message from the Rx queue.
         
         Args:
