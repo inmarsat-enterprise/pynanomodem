@@ -1,7 +1,7 @@
 # pynanomodem
 
 A Python library/package for interfacing to modems using Viasat's
-[**IoT Nano**](www.viasat.com/enterprise/services/iot-nano)
+[**IoT Nano**](https://www.viasat.com/enterprise/services/iot-nano)
 satellite IoT service.
 
 IoT Nano is a **Non-IP** messaging service offering very low power consumption,
@@ -116,5 +116,5 @@ To find out more details about system integration and the detailed operation
 of the IoT Nano service, please contact your local Viasat representative or
 authorized distributor to sign a mutual non-disclosure agreement and
 request access to the
-[IoT Nano Developer Kit](github.com/inmarsat-enterprise/idp-developer-kit-nda)
+[IoT Nano Developer Kit](https://github.com/inmarsat-enterprise/idp-developer-kit-nda)
 repository.
