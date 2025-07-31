@@ -26,6 +26,7 @@ class IotNanoMessage:
         self._id: Optional[str] = name
         self._state: Optional[MessageState] = None
         self._payload: Optional[bytes] = None
+        self._payload_crc32: Optional[str] = None
         self._size: Optional[int] = None
         self._ack_bytes: Optional[int] = None
         self._priority: Optional[MessagePriorityIdp] = None
@@ -66,6 +67,21 @@ class IotNanoMessage:
             raise ValueError('Payload must be bytes with length 2 or more')
         self._payload = data
         self._size = len(data)
+    
+    @property
+    def payload_crc32(self) -> Union[str, None]:
+        return self._payload_crc32
+    
+    @payload_crc32.setter
+    def payload_crc32(self, value: str):
+        if isinstance(value, str) and len(value) != 8:
+            try:
+                int(value, 16)
+                self._payload_crc32 = value
+                return
+            except ValueError:
+                pass
+        raise ValueError('Invalid CRC32 hex string')
     
     @property
     def codec_sin(self) -> Union[int, None]:
