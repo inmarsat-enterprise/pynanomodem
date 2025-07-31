@@ -14,6 +14,17 @@ files = [
 ]
 
 [[package]]
+name = "crcmod"
+version = "1.7"
+description = "CRC Generator"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "crcmod-1.7.tar.gz", hash = "sha256:dc7051a0db5f2bd48665a990d3ec1cc305a466a77358ca4492826f41f283601e"},
+]
+
+[[package]]
 name = "exceptiongroup"
 version = "1.3.0"
 description = "Backport of PEP 654 (exception groups)"
@@ -246,4 +257,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9"
-content-hash = "caa057454fc4681325620b5bc1fdd597301dcc394179c84c8b016a91a8c459d9"
+content-hash = "68272c4702ac364854cc6efd8e57712692290ea933e837f733e0e507ff3ccfc8"
