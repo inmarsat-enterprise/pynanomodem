@@ -369,9 +369,9 @@ class SignalLevelIdp(Enum):
     def nearest(cls, value: Union[float, int]) -> 'SignalLevelIdp':
         if not isinstance(value, (float, int)):
             raise ValueError('Value must be float or int')
-        eligible = [member for member in cls if member.value >= value]
-        if eligible:
-            return min(eligible, key=lambda m: m.value)
+        for member in sorted(cls, key=lambda e: e.value, reverse=True):
+            if value >= member.value:
+                return member
         return SignalLevelIdp.INVALID
 
 @dataclass
