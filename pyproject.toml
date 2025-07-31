@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pynanomodem"
-version = "0.1.0"
+version = "0.1.2"
 description = "A Python implementation for Viasat IoT Nano modems."
 authors = ["Your Name <you@example.com>"]
 license = "Apache2.0"
@@ -9,7 +9,6 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.9"
 pyatcommand = "^0.4.0"
-crcmod = "^1.7"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.0"

@@ -1,5 +1,14 @@
+"""Basic example interfacing to IoT Nano modem.
+
+* Read network status
+* Check for modem events
+* Send periodic heartbeat data
+* Allow remote reconfiguration of heartbeat interval
+
+"""
 import logging
 import time
+from datetime import date
 
 from pynanomodem import (
     EventNotification,
@@ -11,7 +20,7 @@ from pynanomodem import (
 )
 
 LOG_LEVEL = logging.INFO
-HEARTBEAT_INTERVAL = 86400   # seconds = 1/day
+HEARTBEAT_INTERVAL = 0   # seconds = 1/day
 
 formatter = logging.Formatter(
     fmt = ('%(asctime)s,[%(levelname)s],(%(threadName)s)'
@@ -19,7 +28,7 @@ formatter = logging.Formatter(
     datefmt='%Y-%m-%dT%H:%M:%S',
 )
 formatter.converter = time.gmtime   # !IMPORTANT for correlation with network support
-file_handler = logging.FileHandler('./logs/qos.log')
+file_handler = logging.FileHandler(f'./logs/qos-{date.today().strftime("%Y%m%d")}.log')
 file_handler.setFormatter(formatter)
 file_handler.setLevel(logging.INFO)
 console = logging.StreamHandler()
@@ -136,7 +145,9 @@ def main():
                 logger.info('%s', modem.get_acquisition_summary())
                 last_log_time = time.time()
             
-            if time.time() - last_heartbeat_time >= heartbeat_interval:
+            if (heartbeat_interval and
+                time.time() - last_heartbeat_time >= heartbeat_interval):
+                # send heartbeat
                 heartbeat_count += 1
                 logger.info('Heartbeat # %d triggered', heartbeat_count)
                 if modem.is_transmit_allowed():
