@@ -1,5 +1,14 @@
+"""Basic example interfacing to IoT Nano modem.
+
+* Read network status
+* Check for modem events
+* Send periodic heartbeat data
+* Allow remote reconfiguration of heartbeat interval
+
+"""
 import logging
 import time
+from datetime import date
 
 from pynanomodem import (
     EventNotification,
@@ -19,7 +28,7 @@ formatter = logging.Formatter(
     datefmt='%Y-%m-%dT%H:%M:%S',
 )
 formatter.converter = time.gmtime   # !IMPORTANT for correlation with network support
-file_handler = logging.FileHandler('./logs/qos.log')
+file_handler = logging.FileHandler(f'./logs/qos-{date.today().strftime("%Y%m%d")}.log')
 file_handler.setFormatter(formatter)
 file_handler.setLevel(logging.INFO)
 console = logging.StreamHandler()
