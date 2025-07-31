@@ -11,7 +11,7 @@ from pynanomodem import (
 )
 
 LOG_LEVEL = logging.INFO
-HEARTBEAT_INTERVAL = 86400   # seconds = 1/day
+HEARTBEAT_INTERVAL = 0   # seconds = 1/day
 
 formatter = logging.Formatter(
     fmt = ('%(asctime)s,[%(levelname)s],(%(threadName)s)'
@@ -136,7 +136,9 @@ def main():
                 logger.info('%s', modem.get_acquisition_summary())
                 last_log_time = time.time()
             
-            if time.time() - last_heartbeat_time >= heartbeat_interval:
+            if (heartbeat_interval and
+                time.time() - last_heartbeat_time >= heartbeat_interval):
+                # send heartbeat
                 heartbeat_count += 1
                 logger.info('Heartbeat # %d triggered', heartbeat_count)
                 if modem.is_transmit_allowed():
