@@ -175,7 +175,7 @@ class SatelliteModem(AtClient, ABC):
         raise NotImplementedError('Implement in model-specific subclass')
     
     # @abstractmethod
-    def mt_message_recv(self, message: MtMessage) -> Union[MtMessage, None]:
+    def mt_message_recv(self, message: MtMessage, **kwargs) -> Union[MtMessage, None]:
         """Retrieve the specified message (by name) from the Rx queue.
         
         Args:
