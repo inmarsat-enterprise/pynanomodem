@@ -36,6 +36,7 @@ class SatelliteModem(AtClient, ABC):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         self._mobile_id: str = ''
+        self._command_timeout = 1
     
     @property
     def mobile_id(self) -> str:
