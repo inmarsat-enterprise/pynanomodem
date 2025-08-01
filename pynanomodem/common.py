@@ -325,13 +325,13 @@ class EventNotification(IntFlag):
 class SignalQuality(IntEnum):
     """A qualitative indicator of relative signal strength."""
     UNKNOWN = 0   # No Rx/Tx attempt
-    NONE = 1   # No successful Rx/Tx
-    WEAK = 2   # T415 Very poor
-    POOR = 3
+    NONE = 1   # T415 OGx No successful Rx/Tx
+    POOR = 2   # T415 OGx Very poor
+    MARGINAL = 3   # T415 OGx Poor
     FAIR = 4
     GOOD = 5
-    STRONG = 6   # T415 Very Good
-    SUPER = 7   # T415 Excellent
+    STRONG = 6   # T415 OGx Very Good
+    BEST = 7   # T415 OGx Excellent
     
     def bars(self) -> str:
         """Qualitative indicator as number of bars 0..5"""
@@ -358,8 +358,8 @@ class SignalLevelIdp(Enum):
     NONE, FAIR, GOOD: a scale to be used as greaterOrEqual threshold
     """
     NONE = 0.0
-    WEAK = 37.0
-    POOR = 39.0
+    POOR = 37.0
+    MARGINAL = 39.0
     FAIR = 41.0
     GOOD = 43.0
     STRONG = 45.5
