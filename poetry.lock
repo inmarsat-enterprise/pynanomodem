@@ -14,17 +14,6 @@ files = [
 ]
 
 [[package]]
-name = "crcmod"
-version = "1.7"
-description = "CRC Generator"
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "crcmod-1.7.tar.gz", hash = "sha256:dc7051a0db5f2bd48665a990d3ec1cc305a466a77358ca4492826f41f283601e"},
-]
-
-[[package]]
 name = "exceptiongroup"
 version = "1.3.0"
 description = "Backport of PEP 654 (exception groups)"
@@ -85,14 +74,14 @@ testing = ["coverage", "pytest", "pytest-benchmark"]
 
 [[package]]
 name = "pyatcommand"
-version = "0.4.2"
+version = "0.4.3"
 description = "An interface for V.25 Hayes AT commands"
 optional = false
 python-versions = "<4.0,>=3.9"
 groups = ["main"]
 files = [
-    {file = "pyatcommand-0.4.2-py3-none-any.whl", hash = "sha256:707cfb2ed7654a9e35025f5d048da399d074a93c4915e7c71cbba5500b20be34"},
-    {file = "pyatcommand-0.4.2.tar.gz", hash = "sha256:69a351e213d3eef366bb15fd644dca2486556dedc56e8a4070c0f9924f1c3a4a"},
+    {file = "pyatcommand-0.4.3-py3-none-any.whl", hash = "sha256:2aca8e5be42434ee6d983c963cccda338b7ead9a2e57dda76f785344f0082beb"},
+    {file = "pyatcommand-0.4.3.tar.gz", hash = "sha256:23c952dd5386fc6ec6dc8548b3ddd8ad1f0a6fbafe1a82b282f81df53d4b22a6"},
 ]
 
 [package.dependencies]
@@ -103,14 +92,14 @@ xmodem = ">=0.4.7,<0.5.0"
 
 [[package]]
 name = "pygments"
-version = "2.19.1"
+version = "2.19.2"
 description = "Pygments is a syntax highlighting package written in Python."
 optional = false
 python-versions = ">=3.8"
 groups = ["dev"]
 files = [
-    {file = "pygments-2.19.1-py3-none-any.whl", hash = "sha256:9ea1544ad55cecf4b8242fab6dd35a93bbce657034b0611ee383099054ab6d8c"},
-    {file = "pygments-2.19.1.tar.gz", hash = "sha256:61c16d2a8576dc0649d9f39e089b5f02bcd27fba10d8fb4dcc28173f7a45151f"},
+    {file = "pygments-2.19.2-py3-none-any.whl", hash = "sha256:86540386c03d588bb81d44bc3928634ff26449851e99741617ecb9037ee5ec0b"},
+    {file = "pygments-2.19.2.tar.gz", hash = "sha256:636cb2477cec7f8952536970bc533bc43743542f70392ae026374600add5b887"},
 ]
 
 [package.extras]
@@ -148,14 +137,14 @@ pyserial = "*"
 
 [[package]]
 name = "pytest"
-version = "8.4.0"
+version = "8.4.1"
 description = "pytest: simple powerful testing with Python"
 optional = false
 python-versions = ">=3.9"
 groups = ["dev"]
 files = [
-    {file = "pytest-8.4.0-py3-none-any.whl", hash = "sha256:f40f825768ad76c0977cbacdf1fd37c6f7a468e460ea6a0636078f8972d4517e"},
-    {file = "pytest-8.4.0.tar.gz", hash = "sha256:14d920b48472ea0dbf68e45b96cd1ffda4705f33307dcc86c676c1b5104838a6"},
+    {file = "pytest-8.4.1-py3-none-any.whl", hash = "sha256:539c70ba6fcead8e78eebbf1115e8b589e7565830d7d006a8723f19ac8a0afb7"},
+    {file = "pytest-8.4.1.tar.gz", hash = "sha256:7c67fd69174877359ed9371ec3af8a3d2b04741818c51e5e99cc1742251fa93c"},
 ]
 
 [package.dependencies]
@@ -230,15 +219,15 @@ files = [
 
 [[package]]
 name = "typing-extensions"
-version = "4.14.0"
+version = "4.14.1"
 description = "Backported and Experimental Type Hints for Python 3.9+"
 optional = false
 python-versions = ">=3.9"
 groups = ["dev"]
 markers = "python_version < \"3.11\""
 files = [
-    {file = "typing_extensions-4.14.0-py3-none-any.whl", hash = "sha256:a1514509136dd0b477638fc68d6a91497af5076466ad0fa6c338e44e359944af"},
-    {file = "typing_extensions-4.14.0.tar.gz", hash = "sha256:8676b788e32f02ab42d9e7c61324048ae4c6d844a399eebace3d4979d75ceef4"},
+    {file = "typing_extensions-4.14.1-py3-none-any.whl", hash = "sha256:d1e1e3b58374dc93031d6eda2420a48ea44a36c2b4766a4fdeb3710755731d76"},
+    {file = "typing_extensions-4.14.1.tar.gz", hash = "sha256:38b39f4aeeab64884ce9f74c94263ef78f3c22467c8724005483154c26648d36"},
 ]
 
 [[package]]
@@ -257,4 +246,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9"
-content-hash = "68272c4702ac364854cc6efd8e57712692290ea933e837f733e0e507ff3ccfc8"
+content-hash = "caa057454fc4681325620b5bc1fdd597301dcc394179c84c8b016a91a8c459d9"
