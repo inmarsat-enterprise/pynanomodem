@@ -139,7 +139,7 @@ def main():
                 except AttributeError:
                     pass
             
-            if time.time() - last_notification_check_time >= 5:
+            if not events and time.time() - last_notification_check_time >= 5:
                 events_mask = modem.get_active_events_mask()
                 events = EventNotification.get_events(events_mask)
                 last_notification_check_time = time.time()
