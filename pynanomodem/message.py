@@ -74,7 +74,7 @@ class IotNanoMessage:
     
     @payload_crc32.setter
     def payload_crc32(self, value: str):
-        if isinstance(value, str) and len(value) != 8:
+        if isinstance(value, str) and len(value) == 8:
             try:
                 int(value, 16)
                 self._payload_crc32 = value
