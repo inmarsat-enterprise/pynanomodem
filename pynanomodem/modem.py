@@ -55,7 +55,7 @@ class SatelliteModem(AtClient, ABC):
         if self._mobile_id:
             return self._mobile_id
         resp = self.send_command('AT+GSN', prefix='+GSN:')
-        if resp.ok and isinstance(resp.info, str):
+        if resp.ok and resp.info:
             return resp.info
         return ''
     
@@ -70,7 +70,7 @@ class SatelliteModem(AtClient, ABC):
     def get_firmware_version(self) -> str:
         """Get the modem firmware version."""
         resp = self.send_command('AT+GMR', prefix='+GMR:')
-        if resp.ok and isinstance(resp.info, str):
+        if resp.ok and resp.info:
             # TODO: parse components
             return resp.info
         return ''
