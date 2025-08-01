@@ -28,7 +28,10 @@ formatter = logging.Formatter(
     datefmt='%Y-%m-%dT%H:%M:%S',
 )
 formatter.converter = time.gmtime   # !IMPORTANT for correlation with network support
-file_handler = logging.FileHandler(f'./logs/qos-{date.today().strftime("%Y%m%d")}.log')
+file_handler = logging.FileHandler(
+    f'./logs/qos-{date.today().strftime("%Y%m%d")}.log',
+    mode='a',
+)
 file_handler.setFormatter(formatter)
 file_handler.setLevel(logging.INFO)
 console = logging.StreamHandler()
