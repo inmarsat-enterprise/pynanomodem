@@ -1,5 +1,6 @@
 """Example showing sending a large message."""
 import logging
+import math
 import time
 from datetime import date
 from typing import Iterable
@@ -33,10 +34,18 @@ logger.addHandler(console)
 
 
 def iter_chunks_with_header(data: bytearray, chunk_size: int) -> Iterable[bytes]:
-    """Break up data into transmission-friendly chunks."""
+    """Break up data into transmission-friendly chunks.
+    
+    First 2 bytes are 0xFFFF as an identifier for large message.
+    3rd byte is the subsequent number of chunks to be transmitted.
+    """
     header_sin_min = b'\xFF\xFF'
+    chunks_left = math.ceil(len(data) / chunk_size)
+    if chunks_left > 255:
+        raise ValueError('Exceeded maximum chunk count')
     for i in range(0, len(data), chunk_size):
-        yield bytes(header_sin_min + bytes([i]) + data[i:i + chunk_size])
+        chunks_left -= 1
+        yield bytes(header_sin_min + bytes([chunks_left]) + data[i:i + chunk_size])
 
 
 def main():
