@@ -24,11 +24,11 @@ from .common import (
 )
 from .location import GnssFixQuality, GnssFixType, GnssLocation, GnssSatelliteInfo
 from .message import IotNanoMessage, MoMessage, MtMessage
-from .modem import SatelliteModem, get_model
+from .modem import SatelliteModem
+from .utils import get_model, load_modem_class, clone_and_load_modem_classes
 
 __all__ = [
     'SatelliteModem',
-    'get_model',
     'ModemManufacturer',
     'ModemModel',
     'BeamType',
@@ -56,4 +56,7 @@ __all__ = [
     'GnssFixQuality',
     'GnssSatelliteInfo',
     'OperatingMode',
+    'get_model',
+    'load_modem_class',
+    'clone_and_load_modem_classes',
 ]
