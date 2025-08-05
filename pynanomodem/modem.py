@@ -46,6 +46,10 @@ class SatelliteModem(AtClient, ABC):
     def network(self) -> NetworkProtocol:
         return self._network
     
+    def connect(self, **kwargs) -> None:
+        super().connect(**kwargs)
+        self._autoconfig = False   # avoid potential false V0/E0 detection
+    
     def disconnect(self) -> None:
         super().disconnect()
         self._mobile_id = ''
@@ -353,14 +357,15 @@ class SatelliteModem(AtClient, ABC):
         
         Returns a list of (class, subclass) tuples.
         """
+        events: list[tuple[int, int]] = []
         resp = self.send_command('AT%EVMON', prefix='%EVMON:')
         if resp.ok and resp.info:
             events_str = [e.strip() for e in resp.info.split(',')]
-            events: list[tuple[int, int]] = []
             for event in events_str:
                 events.append(tuple([int(v) for v in event.split('.')]))   # pyright: ignore
-            return events
-        raise IOError('Unable to determine monitored trace events')
+        else:
+            _log.warning('Unable to determine monitored trace events')
+        return events
     
     def set_trace_events_monitor(self, event_list: list[tuple[int,int]]) -> bool:
         """Set the monitored trace events.
@@ -384,7 +389,9 @@ class SatelliteModem(AtClient, ABC):
         resp = self.send_command('ATS80?')
         if resp.ok and resp.info:
             return int(resp.info)
-        raise IOError('Unable to determine last error code')
+        else:
+            _log.warning('Unable to determine last error code')
+            return 0
     
 
 def get_model(modem: AtClient) -> ModemModel:
