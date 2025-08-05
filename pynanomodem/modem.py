@@ -53,6 +53,7 @@ class SatelliteModem(AtClient, ABC):
     def disconnect(self) -> None:
         super().disconnect()
         self._mobile_id = ''
+        self._autoconfig = True
     
     def get_mobile_id(self) -> str:
         """Get the modem's globally unique identifier"""
