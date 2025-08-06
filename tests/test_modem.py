@@ -7,7 +7,7 @@ from pynanomodem import (
     get_model,
     ModemModel,
     NetworkState,
-    AcquisitionSummary,
+    NetInfo,
     SignalQuality,
 )
 
@@ -51,8 +51,8 @@ def test_get_network_state(modem: SatelliteModem):
 
 
 def test_get_acquisition_summary(modem: SatelliteModem):
-    summary = modem.get_acquisition_summary()
-    assert isinstance(summary, AcquisitionSummary)
+    summary = modem.get_netinfo()
+    assert isinstance(summary, NetInfo)
     logger.info('Acquisition summary: %s', summary)
 
 

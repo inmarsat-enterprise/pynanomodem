@@ -19,6 +19,7 @@ from .common import (
     PowerMode,
     WakeupInterval,
     GnssMode,
+    EventNotification,
 )
 from .location import GnssLocation
 from .message import MoMessage, MtMessage
@@ -83,13 +84,20 @@ class SatelliteModem(AtClient, ABC):
             return resp.info
         return ''
     
+    def initialize(self, **kwargs) -> bool:
+        """Initialize settings for the modem.
+        
+        Settings for event notifications/monitoring and URC notifications.
+        """
+        return True
+    
     # @abstractmethod
     def get_network_state(self) -> NetworkState:
         """Get the current network state."""
         raise NotImplementedError('Implement in model-specific subclass')
     
     # @abstractmethod
-    def get_acquisition_summary(self):
+    def get_netinfo(self):
         """Get details of the acquisition process."""
         raise NotImplementedError('Implement in model-specific subclass')
     
@@ -396,3 +404,7 @@ class SatelliteModem(AtClient, ABC):
         else:
             _log.warning('Unable to determine last error code')
             return 0
+    
+    def get_urc_event(self, urc: str) -> Union[EventNotification, None]:
+        """Parse a URC to derive an event notification."""
+        raise NotImplementedError('Implement in model-specific subclass')

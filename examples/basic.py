@@ -116,10 +116,8 @@ def main():
     events_set = modem.set_event_mask(events_mask)
     if not events_set:
         logger.error('Unable to set events notifications')
-    device_id = modem.get_mobile_id()
-    firmware = modem.get_firmware_version()
-    # loc = modem.get_location()
-    logger.info('>>> Starting QoS log for %s (%s)', device_id, firmware)
+    logger.info('>>> Starting QoS log for %s (%s)',
+                modem.mobile_id, modem.firmware_version)
     log_interval = 30
     last_log_time = 0
     last_notification_check_time = 0
@@ -145,7 +143,7 @@ def main():
                 last_notification_check_time = time.time()
             
             if time.time() - last_log_time >= log_interval:
-                logger.info('%s', modem.get_acquisition_summary())
+                logger.info('%s', modem.get_netinfo())
                 last_log_time = time.time()
             
             if (heartbeat_interval and

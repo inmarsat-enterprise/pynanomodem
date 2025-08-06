@@ -3,7 +3,7 @@
 from pyatcommand import AtClient, AtTimeout
 
 from .common import (
-    AcquisitionSummary,
+    NetInfo,
     BeamType,
     DataFormat,
     EventNotification,
@@ -43,7 +43,7 @@ __all__ = [
     'AtClient',
     'AtTimeout',
     'SignalQuality',
-    'AcquisitionSummary',
+    'NetInfo',
     'DataFormat',
     'EventNotification',
     'WakeupInterval',

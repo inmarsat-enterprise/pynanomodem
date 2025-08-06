@@ -374,7 +374,7 @@ class SignalLevelIdp(Enum):
         return SignalLevelIdp.INVALID
 
 @dataclass
-class AcquisitionSummary:
+class NetInfo:
     """Key information about network acquisition."""
     network: Optional[NetworkProtocol] = None
     state: Optional[NetworkState] = None
