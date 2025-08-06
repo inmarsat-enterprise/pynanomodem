@@ -36,15 +36,8 @@ class SatelliteModem(AtClient, ABC):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         self._mobile_id: str = ''
+        self._firmware_version: str = ''
         self._command_timeout = 1
-    
-    @property
-    def mobile_id(self) -> str:
-        return self.get_mobile_id()
-    
-    @property
-    def network(self) -> NetworkProtocol:
-        return self._network
     
     def connect(self, **kwargs) -> None:
         super().connect(**kwargs)
@@ -53,30 +46,40 @@ class SatelliteModem(AtClient, ABC):
     def disconnect(self) -> None:
         super().disconnect()
         self._mobile_id = ''
-        self._autoconfig = True
+        self._firmware_version = ''
+        self._autoconfig = True   # allow for new modem detection
     
-    def get_mobile_id(self) -> str:
-        """Get the modem's globally unique identifier"""
+    @property
+    def network(self) -> NetworkProtocol:
+        return self._network
+    
+    @property
+    def manufacturer(self) -> str:
+        """Get the manufacturer name."""
+        return self._manufacturer.name
+    
+    @property
+    def model(self) -> str:
+        """Get the modem model."""
+        return self._model.name
+    
+    @property
+    def firmware_version(self) -> str:
+        """Get the modem firmware version."""
+        if not self._firmware_version:
+            resp = self.send_command('AT+GMR', prefix='+GMR:')
+            if resp.ok and resp.info:
+                # TODO: parse components
+                self._firmware_version = resp.info
+        return self._firmware_version
+    
+    @property
+    def mobile_id(self) -> str:
+        """The modem's globally unique identifier."""
         if self._mobile_id:
             return self._mobile_id
         resp = self.send_command('AT+GSN', prefix='+GSN:')
         if resp.ok and resp.info:
-            return resp.info
-        return ''
-    
-    def get_manufacturer(self) -> str:
-        """Get the manufacturer name."""
-        return self._manufacturer.name
-    
-    def get_model(self) -> str:
-        """Get the modem model."""
-        return self._model.name
-    
-    def get_firmware_version(self) -> str:
-        """Get the modem firmware version."""
-        resp = self.send_command('AT+GMR', prefix='+GMR:')
-        if resp.ok and resp.info:
-            # TODO: parse components
             return resp.info
         return ''
     
