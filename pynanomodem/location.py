@@ -1,4 +1,4 @@
-"""Classes and methods for location, elevation and azimuth for NIMO modems.
+"""Classes and methods for location, elevation and azimuth for satellite modems.
 
 Parses NMEA-0183 data into a `GnssLocation` object.
 """
