@@ -225,7 +225,7 @@ class SatelliteModem(AtClient, ABC):
             The number of bytes sent if no callback is specified otherwise None.
         """
         self.data_mode = True
-        success = xmodem_bytes_handler(self._serial, 'send', data)   # pyright: ignore
+        success = xmodem_bytes_handler(self._serial, 'send', data)              # type: ignore
         self.data_mode = False
         callback = kwargs.get('callback')
         if callable(callback):
@@ -243,7 +243,7 @@ class SatelliteModem(AtClient, ABC):
             If `callback` is not specified returns the bytes, otherwise None. 
         """
         self.data_mode = True
-        data: bytes = xmodem_bytes_handler(self._serial, 'recv', None)   # pyright: ignore
+        data: bytes = xmodem_bytes_handler(self._serial, 'recv', None)          # type: ignore
         self.data_mode = False
         data = data.rstrip(b'\x1a') or b''
         callback = kwargs.get('callback')
@@ -374,7 +374,7 @@ class SatelliteModem(AtClient, ABC):
         if resp.ok and resp.info:
             events_str = [e.strip() for e in resp.info.split(',')]
             for event in events_str:
-                events.append(tuple([int(v) for v in event.split('.')]))   # pyright: ignore
+                events.append(tuple([int(v) for v in event.split('.')]))        # type: ignore
         else:
             _log.warning('Unable to determine monitored trace events')
         return events

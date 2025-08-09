@@ -131,7 +131,7 @@ def main():
             urc = modem.get_urc()
             if urc:
                 try:
-                    event: EventNotification = modem.parse_urc_event(urc)       # pyright: ignore
+                    event: EventNotification = modem.get_urc_event(urc)         # type: ignore
                     events.append(event)
                     logger.info('URC signalled event: %s', event.name)
                 except AttributeError:

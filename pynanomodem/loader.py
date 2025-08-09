@@ -71,9 +71,9 @@ def load_modem_class(file_path: str) -> Union[Type[SatelliteModem], None]:
     """
     module_name = os.path.splitext(os.path.basename(file_path))[0]
     spec = importlib.util.spec_from_file_location(module_name, file_path)
-    module = importlib.util.module_from_spec(spec)                              # pyright: ignore
+    module = importlib.util.module_from_spec(spec)                              # type: ignore
     try:
-        spec.loader.exec_module(module)                                         # pyright: ignore
+        spec.loader.exec_module(module)                                         # type: ignore
     except Exception as exc:
         print(f"Error loading {file_path}: {exc}")
         return None

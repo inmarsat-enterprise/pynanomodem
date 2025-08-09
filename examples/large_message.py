@@ -91,7 +91,7 @@ def main():
                                 latency = time.time() - submit_time
                                 logger.info('Chunk %d completed in %0.1fs',
                                             chunk_count, latency)
-                                modem.mo_message_delete(msg_meta.id)                # pyright: ignore
+                                modem.mo_message_delete(msg_meta.id)            # type: ignore
                                 msg_meta = None
                                 break
                 events = []
