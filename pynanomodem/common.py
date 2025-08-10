@@ -235,6 +235,15 @@ class GnssModeQuectel(GnssMode):
 
 class WakeupInterval(IntEnum):
     """Base class for IDP or OGx wakeup intervals."""
+    def seconds(self) -> int:
+        if self.name == 'NONE':
+            return 5
+        units, value = self.name.split('_')
+        if units == 'SECONDS':
+            return int(value)
+        if units == 'MINUTES':
+            return int(value) * 60
+        return int(value) * 3600
 
 
 class WakeupIntervalIdp(WakeupInterval):
@@ -373,6 +382,7 @@ class SignalLevelIdp(Enum):
                 return member
         return SignalLevelIdp.INVALID
 
+
 @dataclass
 class NetInfo:
     """Key information about network acquisition."""
@@ -486,12 +496,3 @@ class GeoBeam(IntEnum):
     @property
     def id(self):
         return self.value
-
-
-class GeoSatellite(Enum):
-    """Maps the Viasat/Inmarsat geostationary longitude supporting NIMO."""
-    AMER = -98.0   # Inmarsat 4F3
-    AORWSC = -54.0   # Inmarsat 3F5
-    EMEA = 24.9   # Inmarsat 4AF4 aka Alphasat XL
-    IOE = 63.5   # Inmarsat 6F1 previously IOR 3F1, MEAS 4F2
-    APAC = 143.5   # Inmarsat 4F2 previously 4F1
