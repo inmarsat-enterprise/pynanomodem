@@ -52,7 +52,7 @@ class NetworkState(IntEnum):
     def is_registering(self) -> bool:
         return self.name == 'REGISTERING'
     
-    def is_connected(self) -> bool:
+    def is_registered(self) -> bool:
         return self.name in ['ACTIVE', 'CONNECTED']
     
     def is_blocked(self) -> bool:

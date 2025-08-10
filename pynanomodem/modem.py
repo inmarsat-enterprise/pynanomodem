@@ -113,7 +113,7 @@ class SatelliteModem(AtClient, ABC):
     
     def is_transmit_allowed(self) -> bool:
         """Check if message transmission is allowed."""
-        return self.get_network_state().is_connected()
+        return self.get_network_state().is_registered()
     
     def is_blocked(self) -> bool:
         """Check if line of sight is blocked."""
