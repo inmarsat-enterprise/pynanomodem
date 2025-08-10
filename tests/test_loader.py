@@ -1,14 +1,14 @@
 import os
 
-from pynanomodem import SatelliteModem, clone_and_load_modem_classes, load_modem_class
+from pynanomodem import SatelliteModem, clone_and_load_modem_classes
 
 
 PRIVATE_ACCESS_TOKEN = os.getenv('GITHUB_TOKEN')
 REPO_BASE_URL = 'inmarsat-enterprise'
 REPOS = [
     'pynanomodem-quectel-cc200a',
-    # 'pynanomodem-skywave-st2-ogx',
-    # 'pynanomodem-skywave-st2-idp',
+    'pynanomodem-skywave-st2-ogx',
+    'pynanomodem-skywave-st2-idp',
 ]
 
 
