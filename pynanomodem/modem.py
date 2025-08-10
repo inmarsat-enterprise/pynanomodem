@@ -167,6 +167,15 @@ class SatelliteModem(AtClient, ABC):
         """
         raise NotImplementedError('Implement in model-specific subclass')
     
+    def clear_mo_message_queue(self) -> bool:
+        """Iterate the modem Tx queue to remove completed messages."""
+        tx_queue = self.get_mo_message_queue()
+        success = True
+        for msg in tx_queue:
+            if not self.mo_message_delete(msg.id):                              # type: ignore
+                success = False
+        return success
+    
     def mo_message_delete(self, message_id: Union[str, int]) -> bool:
         """Remove a completed mobile-originated message from the Tx queue.
         
@@ -190,6 +199,15 @@ class SatelliteModem(AtClient, ABC):
                 is queued, it will be the only list element.
         """
         raise NotImplementedError('Implement in model-specific subclass')
+    
+    def clear_mt_message_queue(self) -> bool:
+        """Iterate the modem Rx queue to remove completed messages."""
+        rx_queue = self.get_mt_message_queue()
+        success = True
+        for msg in rx_queue:
+            if not self.mt_message_delete(msg.id):                              # type: ignore
+                success = False
+        return success
     
     # @abstractmethod
     def mt_message_recv(self, message: MtMessage, **kwargs) -> Union[MtMessage, None]:
