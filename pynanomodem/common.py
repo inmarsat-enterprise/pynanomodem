@@ -244,6 +244,11 @@ class WakeupInterval(IntEnum):
         if units == 'MINUTES':
             return int(value) * 60
         return int(value) * 3600
+    
+    @classmethod
+    def nearest(cls, seconds: int) -> 'WakeupInterval':
+        """Get the nearest interval to the specified number of seconds."""
+        raise NotImplementedError('Must be called on subclass')
 
 
 class WakeupIntervalIdp(WakeupInterval):
@@ -259,6 +264,30 @@ class WakeupIntervalIdp(WakeupInterval):
     MINUTES_5 = 8
     MINUTES_15 = 9
     MINUTES_20 = 10
+    
+    @classmethod
+    def nearest(cls, seconds: int) -> 'WakeupIntervalIdp':
+        if seconds == 0:
+            return WakeupIntervalIdp.NONE
+        if seconds <= 45:
+            return WakeupIntervalIdp.SECONDS_30
+        if seconds < 3600:
+            minutes = round(seconds / 60, 0)
+            if minutes < 2:
+                return WakeupIntervalIdp.MINUTES_1
+            if minutes < 3:
+                return WakeupIntervalIdp.MINUTES_2
+            if minutes < 5:
+                return WakeupIntervalIdp.MINUTES_3
+            if minutes < 10:
+                return WakeupIntervalIdp.MINUTES_5
+            if minutes < 20:
+                return WakeupIntervalIdp.MINUTES_15
+            if minutes < 30:
+                return WakeupIntervalIdp.MINUTES_20
+            if minutes < 45:
+                return WakeupIntervalIdp.MINUTES_30
+        return WakeupIntervalIdp.HOURS_1
 
 
 class WakeupIntervalOgx(WakeupInterval):
@@ -279,6 +308,43 @@ class WakeupIntervalOgx(WakeupInterval):
     HOURS_6 = 13
     HOURS_12 = 14
     HOURS_24 = 15
+
+    @classmethod
+    def nearest(cls, seconds: int) -> 'WakeupIntervalOgx':
+        if seconds == 0:
+            return WakeupIntervalOgx.NONE
+        if seconds <= 45:
+            return WakeupIntervalOgx.SECONDS_30
+        if seconds < 3600:
+            minutes = round(seconds / 60, 0)
+            if minutes < 2:
+                return WakeupIntervalOgx.MINUTES_1
+            if minutes < 3:
+                return WakeupIntervalOgx.MINUTES_2
+            if minutes < 5:
+                return WakeupIntervalOgx.MINUTES_3
+            if minutes < 10:
+                return WakeupIntervalOgx.MINUTES_5
+            if minutes < 20:
+                return WakeupIntervalOgx.MINUTES_15
+            if minutes < 30:
+                return WakeupIntervalOgx.MINUTES_20
+            if minutes < 45:
+                return WakeupIntervalOgx.MINUTES_30
+            if minutes < 90:
+                return WakeupIntervalOgx.HOURS_1
+        hours = round(seconds / 3600, 0)
+        if hours < 2:
+            return WakeupIntervalOgx.HOURS_1
+        if hours < 3:
+            return WakeupIntervalOgx.HOURS_2
+        if hours <= 5:
+            return WakeupIntervalOgx.HOURS_3
+        if hours <= 9:
+            return WakeupIntervalOgx.HOURS_6
+        if hours <= 18:
+            return WakeupIntervalOgx.HOURS_12
+        return WakeupIntervalOgx.HOURS_24
 
 
 class PowerMode(IntEnum):
@@ -383,27 +449,6 @@ class SignalLevelIdp(Enum):
         return SignalLevelIdp.INVALID
 
 
-@dataclass
-class NetInfo:
-    """Key information about network acquisition."""
-    network: Optional[NetworkProtocol] = None
-    state: Optional[NetworkState] = None
-    beam_state: Optional[BeamStateIdp] = None
-    registered: bool = False
-    signal_quality: SignalQuality = SignalQuality.UNKNOWN
-    signal_level: Optional[float] = None
-    beam_type: Optional[BeamType] = None
-    
-    def to_str(self) -> str:
-        obj = {k: v for k, v in vars(self).items()}
-        for k, v in obj.items():
-            if isinstance(v, Enum):
-                obj[k] = v.name
-            elif isinstance(v, float):
-                obj[k] = round(v, 1)
-        return json.dumps(obj)
-
-
 class GeoBeam(IntEnum):
     """Geographic Beam identifiers mapped to readable names."""
     GLOBAL_BB = 0
@@ -496,3 +541,25 @@ class GeoBeam(IntEnum):
     @property
     def id(self):
         return self.value
+
+
+@dataclass
+class NetInfo:
+    """Key information about network acquisition."""
+    network: Optional[NetworkProtocol] = None
+    state: Optional[NetworkState] = None
+    beam_state: Optional[BeamStateIdp] = None
+    registered: bool = False
+    signal_quality: SignalQuality = SignalQuality.UNKNOWN
+    signal_level: Optional[float] = None
+    beam_type: Optional[BeamType] = None
+    geo_beam: Optional[GeoBeam] = None
+    
+    def to_str(self) -> str:
+        obj = {k: v for k, v in vars(self).items()}
+        for k, v in obj.items():
+            if isinstance(v, Enum):
+                obj[k] = v.name
+            elif isinstance(v, float):
+                obj[k] = round(v, 1)
+        return json.dumps(obj)
