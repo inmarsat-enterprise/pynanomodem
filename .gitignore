@@ -7,4 +7,5 @@ __pycache__
 logs/
 *.log
 dist/
-pynanomodem/modems
+pynanomodem/modems/*.py
+!pynanomodem/modems/__init__.py

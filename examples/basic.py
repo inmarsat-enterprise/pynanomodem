@@ -12,12 +12,11 @@ from datetime import date
 
 from pynanomodem import (
     EventNotification,
-    ModemModel,
     GnssLocation,
     NetworkProtocol,
     SatelliteModem,
-    get_model,
 )
+from pynanomodem.loader import detect_modem
 
 LOG_LEVEL = logging.INFO
 HEARTBEAT_INTERVAL = 0   # seconds = 1/day
@@ -95,14 +94,7 @@ def reconfigure_hearbeat(payload: bytes, old_interval: int = HEARTBEAT_INTERVAL)
 
 def main():
     heartbeat_interval = HEARTBEAT_INTERVAL
-    modem = SatelliteModem()
-    model = get_model(modem)
-    if model == ModemModel.CC200A:
-        from pynanomodem.modems.quectel_cc200a import QuectelCc200a
-        modem = QuectelCc200a()
-    elif model == ModemModel.ST2_OGX:
-        from pynanomodem.modems.skywave_st2_ogx import SkywaveSt2Ogx
-        modem = SkywaveSt2Ogx()
+    modem = detect_modem(SatelliteModem())
     modem.connect()
     events_mask = (EventNotification.NETWORK_REGISTERED |
                    EventNotification.MESSAGE_MO_COMPLETE |

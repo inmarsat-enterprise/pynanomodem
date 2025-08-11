@@ -5,7 +5,8 @@ import time
 from datetime import date
 from typing import Iterable
 
-from pynanomodem import SatelliteModem, get_model, ModemModel, EventNotification, NetworkProtocol
+from pynanomodem import SatelliteModem, ModemModel, EventNotification, NetworkProtocol
+from pynanomodem.loader import detect_modem
 
 LOG_LEVEL = logging.INFO
 FILE_SIZE = 5000
@@ -49,14 +50,7 @@ def iter_chunks_with_header(data: bytearray, chunk_size: int) -> Iterable[bytes]
 
 
 def main():
-    modem = SatelliteModem()
-    model = get_model(modem)
-    if model == ModemModel.CC200A:
-        from pynanomodem.modems.quectel_cc200a import QuectelCc200a
-        modem = QuectelCc200a()
-    elif model == ModemModel.ST2_OGX:
-        from pynanomodem.modems.skywave_st2_ogx import SkywaveSt2Ogx
-        modem = SkywaveSt2Ogx()
+    modem = detect_modem(SatelliteModem())
     modem.connect()
     events_mask = int(EventNotification.MESSAGE_MO_COMPLETE)
     events_set = modem.set_event_mask(events_mask)

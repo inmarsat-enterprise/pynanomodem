@@ -64,6 +64,29 @@ class SatelliteModem(AtClient, ABC):
         """Get the modem model."""
         return self._model.name
     
+    def get_model(self) -> ModemModel:
+        """Check the model of the connected modem."""
+        model = self._model
+        mfr_res = self.send_command('ATI')
+        if mfr_res.ok and mfr_res.info:
+            if 'ORBCOMM' in mfr_res.info.upper():
+                model_res = self.send_command('ATI4')
+                if model_res.ok and model_res.info:
+                    if 'ST2' in model_res.info:
+                        proto_res = self.send_command('ATI5')
+                        if proto_res.ok and proto_res.info:
+                            if proto_res.info == '8':
+                                model = ModemModel.ST2_IDP
+                            elif proto_res.info == '10':
+                                model = ModemModel.ST2_OGX
+                            else:
+                                raise ValueError('Unsupported protocol value')
+            elif 'QUECTEL' in mfr_res.info.upper():
+                model = ModemModel.CC200A
+        if model != self._model:
+            _log.warning('Detected %s but expected %s', model.name, self.model)
+        return model
+        
     @property
     def firmware_version(self) -> str:
         """Get the modem firmware version."""
@@ -425,4 +448,8 @@ class SatelliteModem(AtClient, ABC):
     
     def get_urc_event(self, urc: str) -> Union[EventNotification, None]:
         """Parse a URC to derive an event notification."""
+        raise NotImplementedError('Implement in model-specific subclass')
+    
+    def report_debug(self, **kwargs):
+        """Log a debug report."""
         raise NotImplementedError('Implement in model-specific subclass')

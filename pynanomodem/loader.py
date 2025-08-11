@@ -7,11 +7,24 @@ import os
 import tempfile
 import shutil
 import subprocess
+import sys
 from typing import Type, Union
+from pathlib import Path
+from importlib import import_module
 
+from . import modems
 from .modem import SatelliteModem
+from .common import ModemModel
 
 _log = logging.getLogger(__name__)
+
+GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
+GITHUB_ORG = 'inmarsat-enterprise'
+GITHUB_REPOS = [
+    'quectel-cc200a',
+    'skywave-st2-ogx',
+    'skywave-st2-idp',
+]
 
 
 def clone_and_load_modem_classes(repo_urls: 'list[str]',
@@ -84,3 +97,66 @@ def load_modem_class(file_path: str) -> Union[Type[SatelliteModem], None]:
             attr is not SatelliteModem):
             return attr
     return None
+
+
+def detect_modem(modem: SatelliteModem,
+                 modems_path: Path = Path(modems.__path__[0])) -> SatelliteModem:
+    """Get the subclass of the IoT Nano modem.
+    
+    Attempts to find the module in `modems_path` which defaults to the `modems`
+    folder under `pynanomodem`.
+    If not found, will attempt to clone/download from GitHub private repository
+    if a GITHUB_TOKEN environment variable is present.
+    
+    Args:
+        modem (SatelliteModem): The base/unknown modem.
+        modems_path (Path): The path to the modem subclass python files.
+    
+    Returns:
+        Subclass of SatelliteModem.
+    
+    Raises:
+        ModuleNotFoundError if unable to load the subclass.
+    """
+    was_connected = modem.is_connected()
+    if not was_connected:
+        modem.connect()
+    model = modem.get_model()
+    if model != modem._model:
+        modem.disconnect()
+        file_tag = f'{model.name.lower()}.py'
+        modem_paths = [f for f in modems_path.glob('*.py')
+                        if Path(f).name != '__init__.py']
+        if not any(p.name.endswith(file_tag) for p in modem_paths):
+            try:
+                if not GITHUB_TOKEN:
+                    _log.warning('No $GITHUB_TOKEN found please contact Viasat')
+                    raise ValueError('Missing $GITHUB_TOKEN')
+                for repo_name in GITHUB_REPOS:
+                    if repo_name.replace('-', '_').endswith(model.name.lower()):
+                        repo_url = (f'https://{GITHUB_TOKEN}@github.com'
+                                    f'/{GITHUB_ORG}/pynanomodem-{repo_name}')
+                        clone_and_load_modem_classes([repo_url],
+                                                     download_path=str(modems_path))
+            except Exception as e:
+                raise ModuleNotFoundError(f'No module for {model.name}') from e
+        for p in modem_paths:
+            if p.name.endswith(file_tag):
+                modem_path = p.resolve()
+                sys.path.append(str(modem_path.parents[2]))
+                relative_path = modem_path.relative_to(modem_path.parents[2])
+                module_name = '.'.join(relative_path.with_suffix('').parts)
+                submodule = import_module(module_name)
+                for attr_name in dir(submodule):
+                    candidate = getattr(submodule, attr_name)
+                    if (isinstance(candidate, type) and
+                        issubclass(candidate, SatelliteModem) and
+                        candidate._model.name == model.name):
+                        modem = candidate(port=modem.port)
+                        break
+                break
+    if model == ModemModel.UNKNOWN:
+        raise ModuleNotFoundError('Unrecognized modem')
+    if was_connected:
+        modem.connect()
+    return modem

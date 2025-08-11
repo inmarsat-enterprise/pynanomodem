@@ -50,28 +50,3 @@ def bits_in_bitmask(bitmask: int) -> Iterable[int]:
         bit = bitmask & (~bitmask+1)
         yield bit
         bitmask ^= bit
-
-
-def get_model(modem: AtClient) -> ModemModel:
-    """Get the model of a IoT Nano modem."""
-    try:
-        modem.connect()
-        mfr_res = modem.send_command('ATI')
-        if mfr_res.ok and isinstance(mfr_res.info, str):
-            if 'ORBCOMM' in mfr_res.info.upper():
-                model_res = modem.send_command('ATI4')
-                if model_res.ok and isinstance(model_res.info, str):
-                    if 'ST2' in model_res.info:
-                        proto_res = modem.send_command('ATI5')
-                        if proto_res.ok and isinstance(proto_res.info, str):
-                            if proto_res.info == '8':
-                                return ModemModel.ST2_IDP
-                            elif proto_res.info == '10':
-                                return ModemModel.ST2_OGX
-                            else:
-                                raise ValueError('Unsupported protocol value')
-            elif 'QUECTEL' in mfr_res.info.upper():
-                return ModemModel.CC200A
-        return ModemModel.UNKNOWN
-    finally:
-        modem.disconnect()
