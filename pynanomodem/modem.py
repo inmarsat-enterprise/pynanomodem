@@ -83,8 +83,10 @@ class SatelliteModem(AtClient, ABC):
                                 raise ValueError('Unsupported protocol value')
             elif 'QUECTEL' in mfr_res.info.upper():
                 model = ModemModel.CC200A
-        if model != self._model:
+        if self._model != ModemModel.UNKNOWN and model != self._model:
             _log.warning('Detected %s but expected %s', model.name, self.model)
+        elif model == ModemModel.UNKNOWN:
+            _log.warning('Unable to determine modem model')
         return model
         
     @property
