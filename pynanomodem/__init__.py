@@ -3,16 +3,17 @@
 from pyatcommand import AtClient, AtTimeout
 
 from .common import (
-    NetInfo,
     BeamType,
     DataFormat,
     EventNotification,
     GnssMode,
+    LastErrorCode,
     MessageState,
     MessageStateIdp,
     MessageStateOgx,
     ModemManufacturer,
     ModemModel,
+    NetInfo,
     NetworkProtocol,
     NetworkState,
     OperatingMode,
@@ -22,12 +23,15 @@ from .common import (
     WakeupIntervalIdp,
     WakeupIntervalOgx,
 )
+from .loader import clone_and_load_modem_classes, detect_modem, load_modem_class
 from .location import GnssFixQuality, GnssFixType, GnssLocation, GnssSatelliteInfo
 from .message import IotNanoMessage, MoMessage, MtMessage
 from .modem import SatelliteModem
-from .loader import load_modem_class, clone_and_load_modem_classes
 
 __all__ = [
+    'AtClient',
+    'AtTimeout',
+    'LastErrorCode',
     'SatelliteModem',
     'ModemManufacturer',
     'ModemModel',
@@ -40,8 +44,6 @@ __all__ = [
     'MtMessage',
     'NetworkProtocol',
     'NetworkState',
-    'AtClient',
-    'AtTimeout',
     'SignalQuality',
     'NetInfo',
     'DataFormat',
@@ -58,4 +60,5 @@ __all__ = [
     'OperatingMode',
     'load_modem_class',
     'clone_and_load_modem_classes',
+    'detect_modem',
 ]
