@@ -99,8 +99,7 @@ def load_modem_class(file_path: str) -> Union[Type[SatelliteModem], None]:
     return None
 
 
-def detect_modem(modem: SatelliteModem,
-                 modems_path: Path = Path(modems.__path__[0])) -> SatelliteModem:
+def detect_modem(modem: SatelliteModem, **kwargs) -> SatelliteModem:
     """Get the subclass of the IoT Nano modem.
     
     Attempts to find the module in `modems_path` which defaults to the `modems`
@@ -110,7 +109,7 @@ def detect_modem(modem: SatelliteModem,
     
     Args:
         modem (SatelliteModem): The base/unknown modem.
-        modems_path (Path): The path to the modem subclass python files.
+        **module (module): The module containing the subclass python files.
     
     Returns:
         Subclass of SatelliteModem.
@@ -122,22 +121,32 @@ def detect_modem(modem: SatelliteModem,
     if not was_connected:
         modem.connect()
     model = modem.get_model()
-    if model != modem._model:
+    if model != ModemModel.UNKNOWN and model != modem._model:
         modem.disconnect()
         file_tag = f'{model.name.lower()}.py'
+        pymodule = kwargs.get('module', modems)
+        modems_path = Path(pymodule.__path__[0])
         modem_paths = [f for f in modems_path.glob('*.py')
-                        if Path(f).name != '__init__.py']
+                       if Path(f).name != '__init__.py']
         if not any(p.name.endswith(file_tag) for p in modem_paths):
             try:
-                if not GITHUB_TOKEN:
-                    _log.warning('No $GITHUB_TOKEN found please contact Viasat')
-                    raise ValueError('Missing $GITHUB_TOKEN')
-                for repo_name in GITHUB_REPOS:
+                token = kwargs.get('github_token', GITHUB_TOKEN)
+                if not token:
+                    _log.warning('No GITHUB_TOKEN found please contact Viasat')
+                    raise ValueError('Missing GITHUB_TOKEN')
+                org = kwargs.get('github_org_name', GITHUB_ORG)
+                repos: list[str] = kwargs.get('github_repos', GITHUB_REPOS)
+                for repo_name in repos:
                     if repo_name.replace('-', '_').endswith(model.name.lower()):
-                        repo_url = (f'https://{GITHUB_TOKEN}@github.com'
-                                    f'/{GITHUB_ORG}/pynanomodem-{repo_name}')
+                        _log.info('Copying %s from GitHub to %s',
+                                  model.name, modems_path)
+                        repo_url = (f'https://{token}@github.com'
+                                    f'/{org}/pynanomodem-{repo_name}')
                         clone_and_load_modem_classes([repo_url],
                                                      download_path=str(modems_path))
+                # Refresh paths
+                modem_paths = [f for f in modems_path.glob('*.py')
+                               if Path(f).name != '__init__.py']
             except Exception as e:
                 raise ModuleNotFoundError(f'No module for {model.name}') from e
         for p in modem_paths:
