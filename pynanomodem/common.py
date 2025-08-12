@@ -6,6 +6,39 @@ from enum import Enum, IntEnum, IntFlag
 from typing import Optional, Union
 
 
+class LastErrorCode(IntEnum):
+    """Error codes from `get_last_error_code`."""
+    NONE = 0
+    INVALID_CMD_CRC = 100
+    UNKNOWN_CMD = 101
+    INVALID_CMD_PARAMETER = 102
+    MSG_TOO_LARGE = 103
+    DATA_MODE_ERROR = 104
+    SYSTEM_ERROR = 105
+    QUEUES_FULL = 106
+    MSG_NAME_ALREADY_IN_USE = 107
+    GNSS_TIMEOUT = 108
+    MSG_UNAVAILABLE = 109
+    RESOURCE_BUSY = 111
+    READ_ONLY_PARAMETER = 112
+    GNSS_FIX_PENDING = 113
+    MSG_NOT_FOUND = 120
+    INVALID_CLASS_OF_SERVICE = 121
+    INVALID_LIFETIME = 122
+    INVALID_MSG_LENGTH = 123
+    DATA_FORMAT_ERROR = 124
+    INVALID_BLOCKID = 125
+    MSG_UNABLE_TO_CANCEL = 126
+    MSG_UNABLE_TO_PAUSE = 127
+    MSG_UNABLE_TO_DELETE = 128
+    MSG_MO_PAUSED = 129
+    MSG_UNABLE_TO_RESUME = 130
+    INVALID_EVENT_ID = 131
+    NO_EVENT_DATA = 132
+    NETWORK_TX_NOT_READY = 133
+    INFO_UNAVAILABLE = 134
+
+
 class ModemManufacturer(IntEnum):
     """Recognized modem/module manufacturers."""
     UNKNOWN = 0
