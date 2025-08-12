@@ -5,7 +5,7 @@ import time
 from datetime import date
 from typing import Iterable
 
-from pynanomodem import SatelliteModem, ModemModel, EventNotification, NetworkProtocol
+from pynanomodem import SatelliteModem, EventNotification, NetworkProtocol
 from pynanomodem.loader import detect_modem
 
 LOG_LEVEL = logging.INFO

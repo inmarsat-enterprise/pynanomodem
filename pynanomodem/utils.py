@@ -3,9 +3,6 @@
 from datetime import datetime, timezone
 from typing import Iterable, Union
 
-from pyatcommand import AtClient
-from .common import ModemModel
-
 
 def ts_to_iso(timestamp: 'float|int', ms: bool = False) -> str:
     """Converts a unix timestamp to ISO 8601 format (UTC).
