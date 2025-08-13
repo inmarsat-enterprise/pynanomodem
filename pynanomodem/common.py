@@ -576,6 +576,15 @@ class GeoBeam(IntEnum):
         return self.value
 
 
+class SatelliteId(IntEnum):
+    """Enumerated satellite ID used by %REGINFO."""
+    EMEA = 0
+    AMER = 1
+    APAC = 2
+    IOE = 3
+    AORW = 4
+
+
 @dataclass
 class NetInfo:
     """Key information about network acquisition."""
