@@ -15,6 +15,7 @@ from .common import (
     ModemModel,
     NetworkProtocol,
     NetworkState,
+    NetInfo,
     SignalQuality,
     PowerMode,
     WakeupInterval,
@@ -122,7 +123,7 @@ class SatelliteModem(AtClient, ABC):
         raise NotImplementedError('Implement in model-specific subclass')
     
     # @abstractmethod
-    def get_netinfo(self):
+    def get_netinfo(self) -> NetInfo:
         """Get details of the acquisition process."""
         raise NotImplementedError('Implement in model-specific subclass')
     
