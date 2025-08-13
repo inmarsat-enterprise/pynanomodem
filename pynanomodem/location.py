@@ -129,6 +129,10 @@ class GnssLocation:
                 obj[k] = v.name
         return json.dumps(obj, skipkeys=True)
     
+    def is_valid(self) -> bool:
+        """Check validity."""
+        return self.latitude is not None and self.longitude is not None
+    
     def parse_nmea(self, nmea_sentence: str):
         """Update the location with information derived from an NMEA sentence.
         
