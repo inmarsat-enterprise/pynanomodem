@@ -6,7 +6,7 @@ from datetime import date
 from typing import Iterable
 
 from pynanomodem import SatelliteModem, EventNotification, NetworkProtocol
-from pynanomodem.loader import detect_modem
+from pynanomodem.loader import mutate_modem
 
 LOG_LEVEL = logging.INFO
 FILE_SIZE = 5000
@@ -50,7 +50,7 @@ def iter_chunks_with_header(data: bytearray, chunk_size: int) -> Iterable[bytes]
 
 
 def main():
-    modem = detect_modem(SatelliteModem())
+    modem = mutate_modem(SatelliteModem())
     modem.connect()
     events_mask = int(EventNotification.MESSAGE_MO_COMPLETE)
     events_set = modem.set_event_mask(events_mask)

@@ -23,7 +23,7 @@ from .common import (
     WakeupIntervalIdp,
     WakeupIntervalOgx,
 )
-from .loader import clone_and_load_modem_classes, detect_modem, load_modem_class
+from .loader import clone_and_load_modem_classes, mutate_modem
 from .location import GnssFixQuality, GnssFixType, GnssLocation, GnssSatelliteInfo
 from .message import IotNanoMessage, MoMessage, MtMessage
 from .modem import SatelliteModem
@@ -58,7 +58,6 @@ __all__ = [
     'GnssFixQuality',
     'GnssSatelliteInfo',
     'OperatingMode',
-    'load_modem_class',
     'clone_and_load_modem_classes',
-    'detect_modem',
+    'mutate_modem',
 ]

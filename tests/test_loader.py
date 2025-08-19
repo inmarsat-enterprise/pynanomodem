@@ -1,6 +1,8 @@
 import os
 
-from pynanomodem import SatelliteModem, clone_and_load_modem_classes, detect_modem
+import serial
+
+from pynanomodem import SatelliteModem, clone_and_load_modem_classes, mutate_modem
 
 
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
@@ -26,6 +28,10 @@ def test_clone_and_load():
 
 def test_detect_modem():
     modem = SatelliteModem()
-    modem = detect_modem(modem)
+    modem.connect()
+    modem = mutate_modem(modem)
     assert isinstance(modem, SatelliteModem)
     assert modem.model != 'UNKNOWN'
+    assert modem.is_connected()
+    assert modem.send_command('AT').ok
+    assert isinstance(modem._serial, serial.Serial)

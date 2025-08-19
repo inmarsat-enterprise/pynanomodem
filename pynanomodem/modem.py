@@ -5,7 +5,7 @@ provide basic methods to query any modem.
 """
 
 import logging
-from abc import ABC   # , abstractmethod
+from abc import ABC
 from typing import Optional, Union
 
 from pyatcommand import AtClient, xmodem_bytes_handler
@@ -40,6 +40,9 @@ class SatelliteModem(AtClient, ABC):
         self._mobile_id: str = ''
         self._firmware_version: str = ''
         self._command_timeout = 1
+    
+    def _post_mutate(self) -> None:
+        """Run after mutating the base class to apply __init__ settings."""
     
     def connect(self, **kwargs) -> None:
         super().connect(**kwargs)
@@ -324,8 +327,8 @@ class SatelliteModem(AtClient, ABC):
         Args:
             **stale_secs (int): The maximum age of the fix to return.
             **wait_secs (int): The maximum time to wait for a fix.
-            **nmea_sentences (str): A CSV list of valid sentence types including
-                RMC,GGA,GSA,GSV.
+            **nmea_sentences (str): A CSV list of valid sentence types.
+                May include RMC,GGA,GSA,GSV.
                 
         Returns:
             GnssLocation or None if a GNSS timeout occurs.

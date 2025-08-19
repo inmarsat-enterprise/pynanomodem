@@ -16,7 +16,7 @@ from pynanomodem import (
     NetworkProtocol,
     SatelliteModem,
 )
-from pynanomodem.loader import detect_modem
+from pynanomodem.loader import mutate_modem
 
 LOG_LEVEL = logging.INFO
 HEARTBEAT_INTERVAL = 0   # seconds = 1/day
@@ -94,7 +94,7 @@ def reconfigure_hearbeat(payload: bytes, old_interval: int = HEARTBEAT_INTERVAL)
 
 def main():
     heartbeat_interval = HEARTBEAT_INTERVAL
-    modem = detect_modem(SatelliteModem())
+    modem = mutate_modem(SatelliteModem())
     modem.connect()
     events_mask = (EventNotification.NETWORK_REGISTERED |
                    EventNotification.MESSAGE_MO_COMPLETE |
