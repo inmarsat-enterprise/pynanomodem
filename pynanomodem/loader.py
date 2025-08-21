@@ -145,25 +145,24 @@ def mutate_modem(modem: SatelliteModem, **kwargs) -> SatelliteModem:
     if modem_path is None:
         try:
             token = kwargs.get('github_token', GITHUB_TOKEN)
-            if not token:
-                _log.warning('No GITHUB_TOKEN found please contact Viasat')
-                raise ValueError('Missing GITHUB_TOKEN')
-            org = kwargs.get('github_org_name', GITHUB_ORG)
-            repos: list[str] = kwargs.get('github_repos', GITHUB_REPOS)
-            for repo_name in repos:
-                if repo_name.replace('-', '_').endswith(model.name.lower()):
-                    _log.info('Copying %s from GitHub to %s',
-                                model.name, modems_path)
-                    repo_url = (f'https://{token}@github.com'
-                                f'/{org}/pynanomodem-{repo_name}')
-                    clone_and_load_modem_classes(
-                        [repo_url], download_path=str(modems_path)
-                    )
-            # refresh after download
-            modem_path = next(
-                (p for p in modems_path.glob('*.py') if p.name.endswith(file_tag)),
-                None,
-            )
+            if token:
+                _log.debug('Attempting to clone model-specific subclass...')
+                org = kwargs.get('github_org_name', GITHUB_ORG)
+                repos: list[str] = kwargs.get('github_repos', GITHUB_REPOS)
+                for repo_name in repos:
+                    if repo_name.replace('-', '_').endswith(model.name.lower()):
+                        _log.info('Copying %s from GitHub to %s',
+                                    model.name, modems_path)
+                        repo_url = (f'https://{token}@github.com'
+                                    f'/{org}/pynanomodem-{repo_name}')
+                        clone_and_load_modem_classes(
+                            [repo_url], download_path=str(modems_path)
+                        )
+                # refresh after download
+                modem_path = next(
+                    (p for p in modems_path.glob('*.py') if p.name.endswith(file_tag)),
+                    None,
+                )
         except Exception as e:
             raise ModuleNotFoundError(f'No module for {model.name}') from e
     # Check if download still did not get the target file
