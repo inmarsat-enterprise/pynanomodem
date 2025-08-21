@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pynanomodem"
-version = "0.1.16"
+version = "0.2.0"
 description = "A Python implementation for Viasat IoT Nano modems."
 authors = ["Your Name <you@example.com>"]
 license = "Apache2.0"
