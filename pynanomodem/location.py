@@ -71,13 +71,13 @@ def validate_nmea(nmea_sentence: str) -> bool:
 class GnssLocation:
     """A set of location-based information derived from the modem's NMEA data.
     
-    Uses 90.0/180.0 if latitude/longitude are unknown
+    Uses 90.0/180.0 and timestamp 0 if latitude/longitude are unknown.
 
     Attributes:
         latitude (float): decimal degrees
         longitude (float): decimal degrees
         altitude (float): in metres
-        speed (float): in knots
+        speed (float): in km/h
         heading (float): in degrees
         timestamp (int): in seconds since 1970-01-01T00:00:00Z
         satellites (int): in view at time of fix
@@ -112,7 +112,7 @@ class GnssLocation:
     def time_iso(self) -> str:
         return f'{ts_to_iso(self.timestamp)}'
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         obj = {k: v for k, v in vars(self).items()
                if not k.startswith('_') and not callable(v)}
         for name, _ in inspect.getmembers(self.__class__,
@@ -135,7 +135,17 @@ class GnssLocation:
     
     def is_valid(self) -> bool:
         """Check validity."""
-        return self.latitude is not None and self.longitude is not None
+        if self.latitude < -90 or self.latitude > 90:
+            return False
+        if self.longitude < -180 or self.longitude > 180:
+            return False
+        if self.latitude == 90 and self.longitude == 180 and self.timestamp == 0:
+            return False
+        if self.fix_type == GnssFixType.NONE:
+            return False
+        if self.fix_quality == GnssFixQuality.INVALID:
+            return False
+        return True
     
     def parse_nmea(self, nmea_sentence: str):
         """Update the location with information derived from an NMEA sentence.
@@ -145,85 +155,99 @@ class GnssLocation:
         """
         if not validate_nmea(nmea_sentence):
             raise ValueError('Invalid NMEA-0183 sentence')
-        data = nmea_sentence.split('*')[0]
-        nmea_type = ''
-        cache = {}
-        for i, field_data in enumerate(data.split(',')):
-            if i == 0:
-                nmea_type = field_data[-3:]
-                if nmea_type == 'GSV':
-                    _log.warning('No processing required for GSV sentence')
+        void_fix = False
+        data = nmea_sentence.rsplit('*', 1)[0]
+        fields = data.split(',')
+        nmea_type = fields[0][-3:]
+        
+        def _parse_rmc(fields):
+            nonlocal void_fix
+            cache = {}
+            try:
+                # Time
+                hh, mm, ss = fields[1][0:2], fields[1][2:4], fields[1][4:6]
+                cache.update({'fix_hour': hh, 'fix_min': mm, 'fix_sec': ss})
+                # Status
+                if fields[2] == 'V':
+                    void_fix = True
                     return
-                if nmea_type == 'GSA' and self.vdop != 99:
-                    # _log.debug('Skipping redundant GSA data')
-                    return
-                # _log.debug('Processing NMEA type: %s', nmea_type)
-            elif i == 1:
-                if nmea_type == 'RMC':
-                    cache['fix_hour'] = field_data[0:2]
-                    cache['fix_min'] = field_data[2:4]
-                    cache['fix_sec'] = field_data[4:6]
-            elif i == 2:
-                if nmea_type == 'RMC':
-                    if (field_data == 'V'):
-                        _log.warn('Fix Void')
-                elif nmea_type == 'GSA':
-                    self.fix_type = GnssFixType(int(field_data))
-            elif i == 3:
-                if nmea_type == 'RMC':
-                    self.latitude = (float(field_data[0:2]) +
-                                     float(field_data[2:]) / 60.0)
-            elif i == 4:
-                if nmea_type == 'RMC':
-                    if field_data == 'S':
-                        self.latitude *= -1
-            elif i == 5:
-                if nmea_type == 'RMC':
-                    self.longitude = (float(field_data[0:3]) +
-                                      float(field_data[3:]) / 60.0)
-            elif i == 6:
-                if nmea_type == 'RMC':
-                    if field_data == 'W':
-                        self.longitude *= -1
-                elif nmea_type == 'GGA':
-                    self.fix_quality = GnssFixQuality(int(field_data))
-            elif i == 7:
-                if nmea_type == 'RMC':
-                    self.speed = float(field_data)
-                elif nmea_type == 'GGA':
-                    self.satellites = int(field_data)
-            elif i == 8:
-                if nmea_type == 'RMC':
-                    self.heading = float(field_data)
-                elif nmea_type == 'GGA':
-                    self.hdop = round(float(field_data), 1)
-            elif i == 9:
-                if nmea_type == 'RMC':
-                    fix_day = field_data[0:2]
-                    fix_month = field_data[2:4]
-                    fix_yy = int(field_data[4:])
-                    fix_yy += 1900 if fix_yy >= 73 else 2000
-                    iso_time = (f'{fix_yy}-{fix_month}-{fix_day}T'
-                                f'{cache["fix_hour"]}:{cache["fix_min"]}'
-                                f':{cache["fix_sec"]}Z')
+                # Latitude
+                if fields[3]:
+                    lat = float(fields[3][0:2]) + float(fields[3][2:]) / 60.0
+                    if fields[4] == 'S':
+                        lat *= -1
+                    self.latitude = round(lat, 6)
+                # Longitude
+                if fields[5]:
+                    lon = float(fields[5][0:3]) + float(fields[5][3:]) / 60.0
+                    if fields[6] == 'W':
+                        lon *= -1
+                    self.longitude = round(lon, 6)
+                # Speed in km/h
+                if fields[7]:
+                    self.speed = round(float(fields[7]) * 1.852, 2)
+                # Heading
+                if fields[8]:
+                    self.heading = float(fields[8])
+                # Date → timestamp
+                if fields[9]:
+                    day, month, yy = int(fields[9][0:2]), int(fields[9][2:4]), int(fields[9][4:])
+                    yy += 1900 if yy >= 73 else 2000
+                    iso_time = f"{yy}-{month:02}-{day:02}T{hh}:{mm}:{ss}Z"
                     self.timestamp = int(iso_to_ts(iso_time))
-                elif nmea_type == 'GGA':
-                    self.altitude = float(field_data)
-            elif i == 10:
-                # RMC magnetic variation - ignore
-                if nmea_type == 'GGA' and field_data != 'M':
-                    _log.warning('Unexpected altitude units: %s', field_data)
-            # elif i == 11:   # RMC magnetic variation direction, GGA height of geoid - ignore
-            # elif i == 12:   # GGA units height of geoid - ignore
-            # elif i == 13:   # GGA seconds since last DGPS update - ignore
-            # elif i == 14:   # GGA DGPS station ID - ignore
-            elif i == 15:   # GSA PDOP - ignore (unused)
-                if nmea_type == 'GSA':
-                    self.pdop = round(float(field_data), 1)
-            # elif i == 16:   # GSA HDOP - ignore (use GGA)
-            elif i == 17:
-                if nmea_type == 'GSA':
-                    self.vdop = round(float(field_data), 1)
+            except Exception as e:
+                _log.warning("Failed parsing RMC fields: %s", e)
+
+        def _parse_gga(fields):
+            try:
+                # Latitude
+                if fields[2]:
+                    lat = float(fields[2][0:2]) + float(fields[2][2:]) / 60.0
+                    if fields[3] == 'S':
+                        lat *= -1
+                    self.latitude = round(lat, 6)
+                # Longitude
+                if fields[4]:
+                    lon = float(fields[4][0:3]) + float(fields[4][3:]) / 60.0
+                    if fields[5] == 'W':
+                        lon *= -1
+                    self.longitude = round(lon, 6)
+                # Fix quality
+                self.fix_quality = GnssFixQuality(int(fields[6] or 0))
+                # Satellites
+                if fields[7]:
+                    self.satellites = int(fields[7])
+                # HDOP
+                if fields[8]:
+                    self.hdop = round(float(fields[8]), 1)
+                # Altitude
+                if fields[9]:
+                    self.altitude = float(fields[9])
+            except Exception as e:
+                _log.warning("Failed parsing GGA fields: %s", e)
+
+        def _parse_gsa(fields):
+            try:
+                # Fix type
+                if fields[2]:
+                    self.fix_type = GnssFixType(int(fields[2] or 0))
+                # PDOP, HDOP, VDOP
+                if len(fields) > 15 and fields[15]:
+                    self.pdop = round(float(fields[15]), 1)
+                if len(fields) > 17 and fields[17]:
+                    self.vdop = round(float(fields[17]), 1)
+            except Exception as e:
+                _log.warning("Failed parsing GSA fields: %s", e)
+                    
+        _log.debug('Parsing NMEA: %s', nmea_sentence)
+        if nmea_type == 'RMC':
+            _parse_rmc(fields)
+        elif nmea_type == 'GGA':
+            _parse_gga(fields)
+        elif nmea_type == 'GSA':
+            _parse_gsa(fields)
+        else:
+            _log.debug('Unsupported NMEA sentence type: %s', nmea_type)
     
     @classmethod
     def from_nmea_list(cls, nmea_list: list[str]) -> 'GnssLocation':
