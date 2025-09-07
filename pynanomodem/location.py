@@ -18,8 +18,8 @@ _log = logging.getLogger(__name__)
 class GnssFixType(IntEnum):
     """Enumerated fix type from NMEA-0183 standard."""
     NONE = 1
-    D2 = 2
-    D3 = 3
+    FIX_2D = 2
+    FIX_3D = 3
 
 
 class GnssFixQuality(IntEnum):
@@ -89,6 +89,10 @@ class GnssLocation:
         time_iso (str): ISO 8601 formatted timestamp
 
     """
+    __slots__ = ('latitude', 'longitude', 'altitude', 'speed', 'heading',
+                 'timestamp', 'satellites', 'fix_type', 'fix_quality',
+                 'pdop', 'hdop', 'vdop',)
+    
     def __init__(self, **kwargs):
         """Initializes a Location with default latitude/longitude 90/180."""
         self.latitude = float(kwargs.get('latitude', 90.0))
