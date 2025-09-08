@@ -83,7 +83,7 @@ class NetworkState(IntEnum):
         return self.name in ['BB_DOWNLOAD', 'UPDATING']
     
     def is_registering(self) -> bool:
-        return self.name == 'REGISTERING'
+        return self.name in ['REGISTERING', 'CONFIRMING']
     
     def is_registered(self) -> bool:
         return self.name in ['ACTIVE', 'CONNECTED']
