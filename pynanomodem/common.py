@@ -55,6 +55,7 @@ class ModemModel(IntEnum):
     ST2_IDP = 2
     CC200A = 3
     ST2_OGX = 4
+    SARA_S520BM10 = 5
 
 
 class NetworkProtocol(IntEnum):
