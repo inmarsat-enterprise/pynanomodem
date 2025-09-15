@@ -113,15 +113,15 @@ class GnssLocation:
         return f'{ts_to_iso(self.timestamp)}'
 
     def __str__(self) -> str:
-        obj = {k: v for k, v in vars(self).items()
-               if not k.startswith('_') and not callable(v)}
-        for name, _ in inspect.getmembers(self.__class__,
+        obj = {s: getattr(self, s) for s in self.__slots__
+               if not s.startswith('_') and not callable(getattr(self, s))}
+        for prop, _ in inspect.getmembers(self.__class__,
                                           lambda o: isinstance(o, property)):
-            if not name.startswith('_'):
+            if not prop.startswith('_'):
                 try:
-                    v = getattr(self, name)
-                    if not callable(v):
-                        obj[name] = v
+                    val = getattr(self, prop)
+                    if not callable(val):
+                        obj[prop] = val
                 except Exception:
                     pass
         for k, v in obj.items():
