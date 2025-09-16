@@ -397,21 +397,6 @@ class PowerMode(IntEnum):
 
 class EventNotification(IntFlag):
     """Bitmask enumerated values for modem event notifications."""
-    GNSS_FIX_NEW =              0b000000000000001
-    MESSAGE_MT_RECEIVED =       0b000000000000010
-    MESSAGE_MO_COMPLETE =       0b000000000000100
-    NETWORK_REGISTERED =        0b000000000001000
-    MODEM_RESET_COMPLETE =      0b000000000010000
-    JAMMING_ANTENNA_CHANGE =    0b000000000100000
-    MODEM_RESET_PENDING =       0b000000001000000
-    WAKEUP_INTERVAL_CHANGE =    0b000000010000000
-    UTC_TIME_SYNC =             0b000000100000000
-    GNSS_FIX_TIMEOUT =          0b000001000000000
-    EVENT_TRACE_CACHED =        0b000010000000000
-    NETWORK_PING_ACKNOWLEDGED = 0b000100000000000   # IDP-only
-    MESSAGE_MO_STARTED =        0b001000000000000   # OGx-only
-    SATCOM_STATE_CHANGE =       0b010000000000000   # OGx-only
-    NETINFO_UPDATE =            0b100000000000000   # OGx-only
     
     @classmethod
     def get_events(cls, event_mask: int) -> 'list[EventNotification]':
@@ -428,6 +413,60 @@ class EventNotification(IntFlag):
         for event in events:
             bitmask |= event.value
         return bitmask
+    
+    def is_mt_recv(self) -> bool:
+        return self.name in {'MESSAGE_MT_RECEIVED'}
+    
+    def is_mo_complete(self) -> bool:
+        return self.name in {'MESSAGE_MO_COMPLETE'}
+    
+    def is_network_registered(self) -> bool:
+        return self.name in {'NETWORK_REGISTERED'}
+    
+    def is_time_sync(self) -> bool:
+        return self.name in {'UTC_TIME_SYNC'}
+    
+    def is_wakeup_change(self) -> bool:
+        return self.name in {'WAKEUP_INTERVAL_CHANGE'}
+    
+    def is_netinfo_update(self) -> bool:
+        return self.name in {'EVENT_TRACE_CACHED',
+                             'SATCOM_STATE_CHANGE',
+                             'NETINFO_UPDATE'}
+
+
+class EventNotificationIdp(EventNotification):
+    """Event notifications available for IDP network protocol."""
+    GNSS_FIX_NEW =              0b000000000000001
+    MESSAGE_MT_RECEIVED =       0b000000000000010
+    MESSAGE_MO_COMPLETE =       0b000000000000100
+    NETWORK_REGISTERED =        0b000000000001000
+    MODEM_RESET_COMPLETE =      0b000000000010000
+    JAMMING_ANTENNA_CHANGE =    0b000000000100000
+    MODEM_RESET_PENDING =       0b000000001000000
+    WAKEUP_INTERVAL_CHANGE =    0b000000010000000
+    UTC_TIME_SYNC =             0b000000100000000
+    GNSS_FIX_TIMEOUT =          0b000001000000000
+    EVENT_TRACE_CACHED =        0b000010000000000
+    NETWORK_PING_ACKNOWLEDGED = 0b000100000000000   # IDP-only
+
+
+class EventNotificationOgx(EventNotification):
+    """Event notifications available for OGx network protocol."""
+    GNSS_FIX_NEW =              0b000000000000001
+    MESSAGE_MT_RECEIVED =       0b000000000000010
+    MESSAGE_MO_COMPLETE =       0b000000000000100
+    NETWORK_REGISTERED =        0b000000000001000
+    MODEM_RESET_COMPLETE =      0b000000000010000
+    JAMMING_ANTENNA_CHANGE =    0b000000000100000
+    MODEM_RESET_PENDING =       0b000000001000000
+    WAKEUP_INTERVAL_CHANGE =    0b000000010000000
+    UTC_TIME_SYNC =             0b000000100000000
+    GNSS_FIX_TIMEOUT =          0b000001000000000
+    EVENT_TRACE_CACHED =        0b000010000000000
+    MESSAGE_MO_STARTED =        0b001000000000000   # OGx-only
+    SATCOM_STATE_CHANGE =       0b010000000000000   # OGx-only
+    NETINFO_UPDATE =            0b100000000000000   # OGx-only
 
 
 class SignalQuality(IntEnum):

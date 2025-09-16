@@ -12,6 +12,8 @@ from datetime import date
 
 from pynanomodem import (
     EventNotification,
+    EventNotificationIdp,
+    EventNotificationOgx,
     GnssLocation,
     NetworkProtocol,
     SatelliteModem,
@@ -96,15 +98,19 @@ def main():
     heartbeat_interval = HEARTBEAT_INTERVAL
     modem = mutate_modem(SatelliteModem())
     modem.connect()
-    events_mask = (EventNotification.NETWORK_REGISTERED |
-                   EventNotification.MESSAGE_MO_COMPLETE |
-                   EventNotification.MESSAGE_MT_RECEIVED |
-                   EventNotification.WAKEUP_INTERVAL_CHANGE)
     if modem.network == NetworkProtocol.IDP:
         modem.set_monitor_network_trace()
-        events_mask |= EventNotification.EVENT_TRACE_CACHED
+        events_mask = (EventNotificationIdp.NETWORK_REGISTERED |
+                       EventNotificationIdp.MESSAGE_MO_COMPLETE |
+                       EventNotificationIdp.MESSAGE_MT_RECEIVED |
+                       EventNotificationIdp.WAKEUP_INTERVAL_CHANGE |
+                       EventNotificationIdp.EVENT_TRACE_CACHED)
     else:
-        events_mask |= EventNotification.NETINFO_UPDATE
+        events_mask = (EventNotificationOgx.NETWORK_REGISTERED |
+                       EventNotificationOgx.MESSAGE_MO_COMPLETE |
+                       EventNotificationOgx.MESSAGE_MT_RECEIVED |
+                       EventNotificationOgx.WAKEUP_INTERVAL_CHANGE |
+                       EventNotificationOgx.NETINFO_UPDATE)
     events_set = modem.set_event_mask(events_mask)
     if not events_set:
         logger.error('Unable to set events notifications')
@@ -116,8 +122,8 @@ def main():
     last_heartbeat_time = 0
     heartbeat_count = 0
     # set initial event flags to clear Tx/Rx queues on first run
-    events: list[EventNotification] = [EventNotification.MESSAGE_MO_COMPLETE,
-                                       EventNotification.MESSAGE_MT_RECEIVED]
+    events: list[EventNotification] = [EventNotificationIdp.MESSAGE_MO_COMPLETE,
+                                       EventNotificationIdp.MESSAGE_MT_RECEIVED]
     try:
         while True:
             urc = modem.get_urc()
@@ -157,7 +163,7 @@ def main():
                 
             for event in events:
                 
-                if event == EventNotification.MESSAGE_MT_RECEIVED:
+                if event.is_mt_recv():
                     rx_queue = modem.get_mt_message_queue()
                     for i, _ in enumerate(rx_queue):
                         mt_message = rx_queue[i]
@@ -175,7 +181,7 @@ def main():
                                 )
                             modem.mt_message_delete(mt_message.id)
                 
-                elif event == EventNotification.MESSAGE_MO_COMPLETE:
+                elif event.is_mo_complete():
                     tx_queue = modem.get_mo_message_queue()
                     for i, mo_message in enumerate(tx_queue):
                         if (mo_message.state and

@@ -5,7 +5,13 @@ import time
 from datetime import date
 from typing import Iterable
 
-from pynanomodem import SatelliteModem, EventNotification, NetworkProtocol
+from pynanomodem import (
+    EventNotification,
+    EventNotificationIdp,
+    EventNotificationOgx,
+    NetworkProtocol,
+    SatelliteModem,
+)
 from pynanomodem.loader import mutate_modem
 
 LOG_LEVEL = logging.INFO
@@ -52,7 +58,10 @@ def iter_chunks_with_header(data: bytearray, chunk_size: int) -> Iterable[bytes]
 def main():
     modem = mutate_modem(SatelliteModem())
     modem.connect()
-    events_mask = int(EventNotification.MESSAGE_MO_COMPLETE)
+    if modem.network == NetworkProtocol.IDP:
+        events_mask = int(EventNotificationIdp.MESSAGE_MO_COMPLETE)
+    else:
+        events_mask = int(EventNotificationOgx.MESSAGE_MO_COMPLETE)
     events_set = modem.set_event_mask(events_mask)
     if not events_set:
         logger.error('Unable to set events notifications')
@@ -78,7 +87,7 @@ def main():
                     events_mask = modem.get_active_events_mask()
                     events = EventNotification.get_events(events_mask)
                     last_notification_check_time = time.time()
-                    if EventNotification.MESSAGE_MO_COMPLETE in events:
+                    if any(event.is_mo_complete() for event in events):
                         tx_queue = modem.get_mo_message_queue()
                         for msg in tx_queue:
                             if msg.id == msg_meta.id:
