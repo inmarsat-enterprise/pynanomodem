@@ -459,7 +459,7 @@ class SatelliteModem(AtClient, ABC):
             _log.warning('Unable to determine last error code')
             return 0
     
-    def get_urc_event(self, urc: str) -> Union[EventNotification, None]:
+    def get_urc_events(self, urc: str) -> list[EventNotification]:
         """Parse a URC to derive an event notification."""
         raise NotImplementedError('Implement in model-specific subclass')
     
