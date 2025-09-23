@@ -34,6 +34,7 @@ class SatelliteModem(AtClient, ABC):
     _manufacturer: ModemManufacturer = ModemManufacturer.UNKNOWN
     _model: ModemModel = ModemModel.UNKNOWN
     _network: NetworkProtocol = NetworkProtocol.IDP
+    _supports_urc: bool = False
     
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
@@ -53,6 +54,10 @@ class SatelliteModem(AtClient, ABC):
         self._mobile_id = ''
         self._firmware_version = ''
         self._autoconfig = True   # allow for new modem detection
+    
+    @property
+    def supports_urc(self) -> bool:
+        return getattr(self, '_supports_urc', False)
     
     @property
     def network(self) -> NetworkProtocol:
