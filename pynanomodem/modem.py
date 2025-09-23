@@ -87,6 +87,8 @@ class SatelliteModem(AtClient, ABC):
                                 raise ValueError('Unsupported protocol value')
             elif 'QUECTEL' in mfr_res.info.upper():
                 model = ModemModel.CC200A
+            elif 'SARA' in mfr_res.info.upper():
+                model = ModemModel.ST4_IDP
         if self._model != ModemModel.UNKNOWN and model != self._model:
             _log.warning('Detected %s but expected %s', model.name, self.model)
         elif model == ModemModel.UNKNOWN:
