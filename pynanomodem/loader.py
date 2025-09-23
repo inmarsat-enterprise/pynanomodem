@@ -23,6 +23,7 @@ GITHUB_REPOS = [
     'quectel-cc200a',
     'skywave-st2-ogx',
     'skywave-st2-idp',
+    'skywave-st4-idp',
 ]
 
 
@@ -159,6 +160,7 @@ def mutate_modem(modem: SatelliteModem, **kwargs) -> SatelliteModem:
                         clone_and_load_modem_classes(
                             [repo_url], download_path=str(modems_path)
                         )
+                        break
                 # refresh after download
                 modem_path = next(
                     (p for p in modems_path.glob('*.py') if p.name.endswith(file_tag)),
