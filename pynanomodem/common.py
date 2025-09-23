@@ -55,7 +55,7 @@ class ModemModel(IntEnum):
     ST2_IDP = 2
     CC200A = 3
     ST2_OGX = 4
-    SARA_S520BM10 = 5
+    ST4_IDP = 5
 
 
 class NetworkProtocol(IntEnum):
@@ -413,6 +413,9 @@ class EventNotification(IntFlag):
         for event in events:
             bitmask |= event.value
         return bitmask
+    
+    def is_gnss_fix(self) -> bool:
+        return self.name in {'GNSS_FIX_NEX'}
     
     def is_mt_recv(self) -> bool:
         return self.name in {'MESSAGE_MT_RECEIVED'}
