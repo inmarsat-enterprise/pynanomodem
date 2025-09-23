@@ -634,11 +634,17 @@ class NetInfo:
     network: Optional[NetworkProtocol] = None
     state: Optional[NetworkState] = None
     beam_state: Optional[BeamStateIdp] = None
-    registered: bool = False
     signal_quality: SignalQuality = SignalQuality.UNKNOWN
     signal_level: Optional[float] = None
     beam_type: Optional[BeamType] = None
     geo_beam: Optional[GeoBeam] = None
+    channel_id: Optional[int] = None
+    
+    @property
+    def registered(self) -> bool:
+        if self.state is not None:
+            return self.state.is_registered()
+        return False
     
     def to_str(self) -> str:
         obj = {k: v for k, v in vars(self).items()}
